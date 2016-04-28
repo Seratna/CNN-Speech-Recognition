@@ -128,6 +128,7 @@ class RecognitionNN(object):
 
                 if step % 1000 == 0:  # save weights
                     saver.save(sess, 'saver/cnn', global_step=step)
+                    print('checkpoint saved')
 
     @staticmethod
     def get_shuffled_index(size):
@@ -138,10 +139,7 @@ class RecognitionNN(object):
 
 def main():
     passes = int(sys.argv[1])
-    resume_training = sys.argv[2] in ['true', 'True', 1, 'y', 'yes']
-
-    print(passes)
-    print(resume_training)
+    resume_training = sys.argv[2].lower() in ['true', '1', 'y', 'yes']
 
     rnn = RecognitionNN()
     rnn.train(passes, resume_training)
