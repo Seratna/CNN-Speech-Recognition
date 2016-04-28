@@ -138,7 +138,10 @@ class RecognitionNN(object):
 
 def main():
     passes = int(sys.argv[1])
-    resume_training = bool(sys.argv[2])
+    resume_training = sys.argv[2] in ['true', 'True', 1, 'y', 'yes']
+
+    print(passes)
+    print(resume_training)
 
     rnn = RecognitionNN()
     rnn.train(passes, resume_training)
