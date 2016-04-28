@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from data_manager import DataManager
+import sys
 
 
 class RecognitionNN(object):
@@ -98,22 +99,35 @@ class RecognitionNN(object):
         self.training = training
         self.accuracy = accuracy
 
-    def train(self, passes):
+    def train(self, passes, resume_training=False):
         dm = DataManager(100)
-        # create a saver
-        saver = tf.train.Saver()
+        saver = tf.train.Saver()  # create a saver
 
+        global_step = 0
         with tf.Session() as sess:
-            sess.run(tf.initialize_all_variables())
-            print('started new session')
+            if resume_training:  # restore from latest check point
+                with open('saver/checkpoint') as file:
+                    line = file.readline()
+                    ckpt = line.split('"')[1]
+                    global_step = int(ckpt.split('-')[1])
+                # restore
+                saver.restore(sess, 'saver/'+ckpt)
+                print('restored from checkpoint ' + ckpt)
+            else:
+                sess.run(tf.initialize_all_variables())
+                print('started new session')
 
-            for i in range(passes):
+            for step in range(1+global_step, passes+global_step):
                 # get a batch
                 x, y = dm.get_batch(5)
                 self.training.run(feed_dict={self.x: x, self.y: y, self.keep_prob: 0.5})
-                if i % 10 == 9:
+
+                if step % 10 == 0:
                     train_accuracy = self.accuracy.eval(feed_dict={self.x: x, self.y: y, self.keep_prob: 1.0})
-                    print("pass {}, training accuracy {}".format(i+1, train_accuracy))
+                    print("pass {}, training accuracy {}".format(step, train_accuracy))
+
+                if step % 1000 == 0:  # save weights
+                    saver.save(sess, 'saver/cnn', global_step=step)
 
     @staticmethod
     def get_shuffled_index(size):
@@ -123,8 +137,11 @@ class RecognitionNN(object):
 
 
 def main():
+    passes = int(sys.argv[1])
+    resume_training = bool(sys.argv[2])
+
     rnn = RecognitionNN()
-    rnn.train(10000000)
+    rnn.train(passes, resume_training)
 
 
 if __name__ == '__main__':
