@@ -111,13 +111,13 @@ class SegmentationNN(object):
             for i in range(passes):
                 print("pass {}".format(i+1))
                 # get a batch
-                x, y = dm.get_batch(1)
+                x, y = dm.get_segmentation_sample()
                 self.training.run(feed_dict={self.x: x, self.y: y, self.keep_prob: 0.5})
                 if i % 10 == 9:
                     train_accuracy = self.accuracy.eval(feed_dict={self.x: x, self.y: y, self.keep_prob: 1.0})
                     print("pass {}, training accuracy {}".format(i+1, train_accuracy))
 
-                if i % 1000 == 9:
+                if i % 1000 == 0:
                     # saver weights
                     saver.save(sess, 'saver/snn', global_step=passes)
 
@@ -133,7 +133,7 @@ class SegmentationNN(object):
 
 def main():
     snn = SegmentationNN()
-    snn.train(100000)
+    snn.train(1000000)
 
 
 if __name__ == '__main__':

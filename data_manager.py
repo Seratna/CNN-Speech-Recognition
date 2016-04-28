@@ -11,11 +11,11 @@ class DataManager(object):
         with open('TIMIT/test_index.txt') as file:
             self.testing_samples = [path.replace('\n', '') for path in file]
 
-
-    def get_batch(self, size, data_set = 0):
+    def get_paths(self, size, data_set = 0):
         """
 
-        :param data_set: 0 is training data, 1 is test data
+        :param size:
+        :param data_set:
         :return:
         """
         if data_set == 0:  # training
@@ -26,14 +26,28 @@ class DataManager(object):
         index = np.array(range(len(samples)), dtype=np.int32)
         np.random.shuffle(index)
 
-        paths = [samples[i] for i in index]
+        paths = [samples[i] for i in index[:size]]
 
         return paths
 
+    def get_batch(self, size, data_set = 0):
+        """
 
-    def get_segmentation_sample(self, data_set = 0):
-        path = self.get_batch(1, data_set)[0]
+        :param data_set: 0 is training data, 1 is test data
+        :return:
+        """
+        paths = self.get_paths(size, data_set)
+        l = []
+        for path in paths:
+            points = self.get_segment_points(path)
+            print(points)
 
+    def get_segment_points(self, path):
+        """
+
+        :param path:
+        :return:
+        """
         # read the start and end points from the file
         with open(path + '.WRD') as file:
             points = []
@@ -43,6 +57,12 @@ class DataManager(object):
 
         # put the segment points in a array
         segment = np.array([p[0] for p in points] + [points[-1][1]], dtype=np.int32)
+        return segment
+
+    def get_segmentation_sample(self, data_set = 0):
+        path = self.get_paths(1, data_set)[0]
+
+        segment = self.get_segment_points(path)
 
         # read the corresponding image
         im = mpimg.imread(path + '.png')
@@ -56,8 +76,6 @@ class DataManager(object):
         # img[:, pixels] = 0
         # plt.imshow(img)
         # plt.show()
-        # plt.imshow(im)
-        # plt.show()
         # print(key)
 
         return im, key
@@ -65,12 +83,21 @@ class DataManager(object):
 
 def main():
     dm = DataManager()
-    # dm.get_segment_key('TIMIT/TEST/DR8/MSLB0/SX383')
+    dm.get_batch(5)
     im, key = dm.get_segmentation_sample()
 
     plt.imshow(im)
     plt.show()
     print(key)
+
+
+    # a = np.array([[1,2,3], [4,5,6]])
+    # b = np.array([[7,8,9], [10,11,12]])
+    # print(a)
+    # print(b)
+    # c = np.array([a, b])
+    # print(c)
+    # print(c.shape)
 
 
 if __name__ == '__main__':
