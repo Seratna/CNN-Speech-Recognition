@@ -124,7 +124,7 @@ class RecognitionNN(object):
 
 def main():
     rnn = RecognitionNN()
-    rnn.train(100)
+    rnn.train(10000000)
 
 
 if __name__ == '__main__':
