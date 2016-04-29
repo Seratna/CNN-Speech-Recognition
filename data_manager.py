@@ -71,11 +71,11 @@ class DataManager(object):
 
                 # get the segmented image of a word, and resize it if necessary
                 segment = im[:, start:end]
-                if (end-start) <= 100:
-                    image = np.zeros((129, 100))
+                if (end-start) <= 50:
+                    image = np.zeros((129, 50))
                     image[:, :end-start] = segment
                 else:
-                    image = misc.imresize(segment, (129, 100))
+                    image = misc.imresize(segment, (129, 50))
                 images.append(image.flatten())
 
                 # build word vector

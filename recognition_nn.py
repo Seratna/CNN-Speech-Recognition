@@ -15,8 +15,8 @@ class RecognitionNN(object):
             nothing
         """
         IMG_HEIGHT = 129
-        IMG_WIDTH = 100
-        NUM_CLASSES = 100
+        IMG_WIDTH = 50
+        NUM_CLASSES = 10
         NUM_CHANNELS = 1
         NUM_NEURONS = 1024
 
@@ -100,7 +100,7 @@ class RecognitionNN(object):
         self.accuracy = accuracy
 
     def train(self, passes, resume_training=False):
-        dm = DataManager(100)
+        dm = DataManager(10)
         saver = tf.train.Saver()  # create a saver
 
         global_step = 0
@@ -119,7 +119,7 @@ class RecognitionNN(object):
 
             for step in range(1+global_step, passes+global_step):
                 # get a batch
-                x, y = dm.get_batch(5)
+                x, y = dm.get_batch(10)
                 self.training.run(feed_dict={self.x: x, self.y: y, self.keep_prob: 0.5})
 
                 if step % 10 == 0:
