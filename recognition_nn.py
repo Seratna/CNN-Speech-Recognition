@@ -169,8 +169,8 @@ def main():
     resume_training = sys.argv[2].lower() in ['true', '1', 'y', 'yes']
 
     rnn = RecognitionNN()
-    # rnn.train(passes, resume_training)
-    rnn.test()
+    rnn.train(passes, resume_training)
+    # rnn.test()
 
 
 if __name__ == '__main__':
